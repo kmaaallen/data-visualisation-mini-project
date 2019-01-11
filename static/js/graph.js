@@ -78,8 +78,8 @@ function show_gender_balance(ndx) {
     var dim = ndx.dimension(dc.pluck('sex'));
     var group = dim.group();
     dc.barChart("#gender-balance")
-        .width(400)
-        .height(300)
+        .width(350)
+        .height(250)
         .margins({ top: 10, right: 50, bottom: 30, left: 50 })
         .dimension(dim)
         .group(group)
@@ -121,8 +121,8 @@ function show_average_salary(ndx) {
     var averageSalaryByGender = dim.group().reduce(add_item, remove_item, initialise);
 
     dc.barChart("#average-salary")
-        .width(400)
-        .height(300)
+        .width(350)
+        .height(250)
         .margins({ top: 10, right: 50, bottom: 30, left: 50 })
         .dimension(dim)
         .group(averageSalaryByGender)
@@ -167,8 +167,8 @@ function show_rank_distribution(ndx) {
     var assocProfByGender = rankByGender(dim, "AssocProf");
 
     dc.barChart("#rank-by-gender")
-        .width(400)
-        .height(300)
+        .width(350)
+        .height(250)
         .dimension(dim)
         .group(profByGender, "Prof")
         .stack(asstProfByGender, "Asst Prof")
@@ -183,6 +183,7 @@ function show_rank_distribution(ndx) {
         })
         .x(d3.scale.ordinal())
         .xUnits(dc.units.ordinal)
+        .xAxisLabel("Gender")
         .legend(dc.legend().x(320).y(20).itemHeight(15).gap(5))
         .margins({ top: 10, right: 100, bottom: 30, left: 30 });
 }
@@ -202,8 +203,8 @@ function show_service_to_salary_correlation(ndx) {
     var maxYears = service_dim.top(1)[0].yrs_service;
 
     dc.scatterPlot("#service-salary")
-        .width(800)
-        .height(400)
+        .width(750)
+        .height(350)
         .x(d3.scale.linear().domain([minYears, maxYears]))
         .brushOn(false)
         .symbolSize(8)
@@ -237,8 +238,8 @@ function show_phd_to_salary_correlation(ndx) {
     var maxYears = phd_dim.top(1)[0].yrs_service;
 
     dc.scatterPlot("#salary-phd")
-        .width(800)
-        .height(400)
+        .width(750)
+        .height(350)
         .x(d3.scale.linear().domain([minYears, maxYears]))
         .brushOn(false)
         .symbolSize(8)
