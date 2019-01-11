@@ -7,8 +7,10 @@ function makeGraphs(error, salariesData) {
 
     salariesData.forEach(function(d) {
         d.salary = parseInt(d.salary);
+        d.yrs_service = parseInt(d["yrs.service"]);
+        d.yrs_since_phd = parseInt(d["yrs.since.phd"]);
     })
-    
+
     show_discipline_selector(ndx);
 
     show_percent_that_are_professors(ndx, "Female", "#percent-of-women-professors");
@@ -17,6 +19,9 @@ function makeGraphs(error, salariesData) {
 
     show_average_salary(ndx);
     show_rank_distribution(ndx);
+
+    show_service_to_salary_correlation(ndx);
+    show_phd_to_salary_correlation(ndx);
 
     dc.renderAll();
 }
@@ -180,4 +185,74 @@ function show_rank_distribution(ndx) {
         .xUnits(dc.units.ordinal)
         .legend(dc.legend().x(320).y(20).itemHeight(15).gap(5))
         .margins({ top: 10, right: 100, bottom: 30, left: 30 });
+}
+
+function show_service_to_salary_correlation(ndx) {
+    var genderColors = d3.scale.ordinal()
+        .domain(["Male", "Female"])
+        .range(["blue", "pink"]);
+
+    var service_dim = ndx.dimension(dc.pluck("yrs_service"));
+    var salary_serv_dim = ndx.dimension(function(d) {
+        return [d.yrs_service, d.salary, d.sex, d.rank];
+    });
+    var experience_salary_group = salary_serv_dim.group();
+
+    var minYears = service_dim.bottom(1)[0].yrs_service;
+    var maxYears = service_dim.top(1)[0].yrs_service;
+
+    dc.scatterPlot("#service-salary")
+        .width(800)
+        .height(400)
+        .x(d3.scale.linear().domain([minYears, maxYears]))
+        .brushOn(false)
+        .symbolSize(8)
+        .clipPadding(10)
+        .xAxisLabel("Years of Service")
+        .yAxisLabel("Salary")
+        .title(function(d) {
+            return d.key[3] + " earned " + d.key[1];
+        })
+        .colorAccessor(function(d) {
+            return d.key[2];
+        })
+        .colors(genderColors)
+        .dimension(salary_serv_dim)
+        .group(experience_salary_group)
+        .margins({ top: 10, right: 50, bottom: 75, left: 75 });
+}
+
+function show_phd_to_salary_correlation(ndx) {
+    var genderColors = d3.scale.ordinal()
+        .domain(["Male", "Female"])
+        .range(["blue", "pink"]);
+
+    var phd_dim = ndx.dimension(dc.pluck("yrs_since_phd"));
+    var salary_phd_dim = ndx.dimension(function(d) {
+        return [d.yrs_since_phd, d.salary, d.sex, d.rank];
+    });
+    var phd_salary_group = salary_phd_dim.group();
+
+    var minYears = phd_dim.bottom(1)[0].yrs_service;
+    var maxYears = phd_dim.top(1)[0].yrs_service;
+
+    dc.scatterPlot("#salary-phd")
+        .width(800)
+        .height(400)
+        .x(d3.scale.linear().domain([minYears, maxYears]))
+        .brushOn(false)
+        .symbolSize(8)
+        .clipPadding(10)
+        .xAxisLabel("Years since phD")
+        .yAxisLabel("Salary")
+        .title(function(d) {
+            return d.key[3] + " earned " + d.key[1];
+        })
+        .colorAccessor(function(d) {
+            return d.key[2];
+        })
+        .colors(genderColors)
+        .dimension(salary_phd_dim)
+        .group(phd_salary_group)
+        .margins({ top: 10, right: 50, bottom: 75, left: 75 });
 }
